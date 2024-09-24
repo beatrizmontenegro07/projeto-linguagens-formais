@@ -48,7 +48,6 @@ def readFile(arq):
             transicao = True    
         elif (transicao):
             t = [t.strip() for t in linha.split(',')]
-            print(t)
             if (len(t) != 3):
                 raise ValueError("A entrada contém transição que não está no padrão de AFD (<estado de partida>, <estado de chegada>, <simbolo>)")
             elif (t[0] not in estados or t[1] not in estados):
@@ -58,8 +57,10 @@ def readFile(arq):
             transicoes.append({'partida': t[0], 'chegada': t[1], 'simbolo': t[2]})
         else:
             raise ValueError('O arquivo de entrada não está nos padrões')
-            
-            
+    
+    if(not isValid(alfabeto, estados, transicoes)):
+        raise ValueError("A entrada não é um AFD")
+                  
 
     return alfabeto, estados, inicial, finais, transicoes
 
@@ -67,7 +68,7 @@ def isValid(alfabeto, estados, transicoes):
     #a ideia é criar uma matriz de estados por alfabeto, que armazena quantas transições daquele simbolo do alfabeto tem nquele estado
     contagem_em_zero = [[0 for _ in range(len(alfabeto))] for _ in range(len(estados))]
 
-    #print(contagem)
+    #print(contagem_em_zero)
     
     matriz = pd.DataFrame(contagem_em_zero, estados, alfabeto)
 
@@ -76,7 +77,7 @@ def isValid(alfabeto, estados, transicoes):
         matriz.loc[transicao['partida'], transicao['simbolo']] += 1
 
     #ao final dessa contagem, a matriz deve conter apenas 1s para ser considerada um AFD
-    print(matriz)
+    #print(matriz)
 
     #verificação dos valores da matriz
     AFD_valido = True
@@ -97,6 +98,8 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais):
     for e in estados:
         dic_indices[e] = index
         index += 1
+
+    print(dic_indices)
     
 
     #criando um dicionario em que cada chave é um estado, e cada eh elemento é uma lista que representa a linha de cada matriz triangular
@@ -139,9 +142,40 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais):
                 table[nf][dic_indices[f]] = 1
     
     print("step 2")
+    print(table)
     for linha in table.values():
         print(linha)
 
+    print("step 3")
+
+
+    #realiza o processo ate nao tiver como fazer mais marcações
+    process = True
+    while(process):
+        process = False
+        for key, values in table.items():
+            for indice, v in enumerate(values):
+                if v == 0:
+                    for a in alfabeto:
+                        e1 = matriz_transicao.loc[key, a]
+                        e2 = matriz_transicao.iloc[indice][a]
+                        if (dic_indices[e1] == dic_indices[e2]):
+                            continue
+                        elif (dic_indices[e1] > dic_indices[e2]):
+                            if (table[e1][dic_indices[e2]]):
+                                table[key][indice] = 1
+                                process = True
+                                break
+                        else:
+                            if (table[e2][dic_indices[e1]]):
+                                table[key][indice] = 1
+                                process = True
+                                break
+
+    for linha in table.values():
+        print(linha)   
+
     return
+
 
     
