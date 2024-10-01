@@ -90,7 +90,7 @@ def isValid(alfabeto, estados, transicoes):
     return AFD_valido
 
 
-def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais):
+def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes):
 
     #criando um dicionario que relaciona um estado a um indice, seguindo a ordem da lista "estados", a fim de consultá-lo para garantir o uso da matriz triangular de baixo
     dic_indices = {}
@@ -175,7 +175,83 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais):
     for linha in table.values():
         print(linha)   
 
+
+    print("step 4")
+
+    matriz_relacao = cria_matriz_relacao(transicoes, estados)
+
+    pares = []
+
+    for key, values in table.items():
+            for indice, v in enumerate(values):
+                if v == 0:
+                    for estado, i in dic_indices.items():
+                        if indice == i:
+                            tupla = (estado, key)
+                            pares.append(tupla)
+
+
+    estados_removidos = []
+    for p in pares:
+        print(f'PAR = {p}')
+        e1 = p[0]
+        e2 = p[1]
+        if(dic_indices[p[1]] < dic_indices[p[0]]):
+            e1 = p[1]
+            e2 = p[0]
+
+        if (e1 in estados_removidos or e2 in estados_removidos): continue
+        for e in estados:
+            if e in estados_removidos: continue
+            i = matriz_relacao.loc[e2][e]
+            k = matriz_relacao.loc[e][e2]
+            print("erro")
+            if not pd.isna(pd.Series(i)).any():
+                print("erro1")
+                if pd.isna(pd.Series(matriz_relacao.loc[e1,e])).any():
+                    print("erro2")
+                    matriz_relacao.loc[e1,e] = i
+                else:  
+                    l = [elem for elem in i if elem not in matriz_relacao.loc[e1,e]]
+                    matriz_relacao.loc[e1,e] = matriz_relacao.loc[e1,e] + l
+
+            print("erro3")
+            if not pd.isna(pd.Series(k)).any():
+                print("erro4")
+                if pd.isna(pd.Series(matriz_relacao.loc[e,e1])).any():
+                    print("erro5")
+                    matriz_relacao.loc[e,e1] = k
+                else:
+                    print('oi')
+                    l = [elem for elem in k if elem not in matriz_relacao.loc[e,e1]]
+                    matriz_relacao.loc[e,e1] = matriz_relacao.loc[e,e1] + l
+            print('oi2')
+
+
+        matriz_relacao = matriz_relacao.drop([e2], axis=0)
+        matriz_relacao = matriz_relacao.drop([e2], axis=1)
+        print(matriz_relacao)
+        estados_removidos.append(e2)
+
+    print("MATRIZ FINAL")
+    print(matriz_relacao)
+        
+
     return
+
+def cria_matriz_relacao(transicoes, estados):
+    matriz_relacao = pd.DataFrame(np.nan, estados, estados, dtype=object)
+
+    for t in transicoes:
+
+        if isinstance(matriz_relacao.loc[t['partida'], t['chegada']], list):
+            matriz_relacao.loc[t['partida'], t['chegada']].append(t['simbolo'])
+        else:
+            matriz_relacao.loc[t['partida'], t['chegada']] = [t['simbolo']]
+    
+    print(matriz_relacao)
+
+    return matriz_relacao
 
 
     

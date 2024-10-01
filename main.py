@@ -24,7 +24,7 @@ try:
     print("Matrix de transição")
     print(matriz_transicao)
 
-    minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais)
+    minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
     
 except FileNotFoundError:
     print("Erro: O arquivo não foi encontrado")
