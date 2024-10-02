@@ -179,6 +179,8 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
     print("step 4")
 
     matriz_relacao = cria_matriz_relacao(transicoes, estados)
+    print(matriz_relacao)
+
 
     pares = []
 
@@ -192,7 +194,7 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
 
 
     estados_copia = estados
-    
+
     for p in pares:
         print(f'PAR = {p}')
 
@@ -208,22 +210,20 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
         for e in estados_copia:
             i = matriz_relacao.loc[e2][e]
             k = matriz_relacao.loc[e][e2]
-            if not pd.isna(pd.Series(i)).any():
 
-                if pd.isna(pd.Series(matriz_relacao.loc[e1,e])).any():
+            if isinstance(i, set):
+
+                if not isinstance(matriz_relacao.loc[e1,e], set):
                     matriz_relacao.loc[e1,e] = i
                 else:  
-                    l = [elem for elem in i if elem not in matriz_relacao.loc[e1,e]]
-                    matriz_relacao.loc[e1,e] = matriz_relacao.loc[e1,e] + l
+                    matriz_relacao.loc[e1,e] = matriz_relacao.loc[e1,e] | i
 
-            if not pd.isna(pd.Series(k)).any():
- 
-                if pd.isna(pd.Series(matriz_relacao.loc[e,e1])).any():
+            if isinstance(k, set):
+
+                if not isinstance(matriz_relacao.loc[e,e1], set):
                     matriz_relacao.loc[e,e1] = k
                 else:
-  
-                    l = [elem for elem in k if elem not in matriz_relacao.loc[e,e1]]
-                    matriz_relacao.loc[e,e1] = matriz_relacao.loc[e,e1] + l
+                    matriz_relacao.loc[e,e1] = matriz_relacao.loc[e,e1] | k
 
 
 
@@ -232,8 +232,6 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
 
         print(matriz_relacao)
 
-        print("antes")
-        print(pares)
 
         for index in range(len(pares)):
             par = pares[index]
@@ -241,9 +239,6 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
             novo_par = (e1 if par[0] == e2 else par[0], e1 if par[1] == e2 else par[1])
 
             pares[index] = novo_par
-
-        print("depois")
-        print(pares)
 
         estados_copia.remove(e2)
 
@@ -258,10 +253,10 @@ def cria_matriz_relacao(transicoes, estados):
 
     for t in transicoes:
 
-        if isinstance(matriz_relacao.loc[t['partida'], t['chegada']], list):
-            matriz_relacao.loc[t['partida'], t['chegada']].append(t['simbolo'])
+        if isinstance(matriz_relacao.loc[t['partida'], t['chegada']], set):
+            matriz_relacao.loc[t['partida'], t['chegada']].add(t['simbolo'])
         else:
-            matriz_relacao.loc[t['partida'], t['chegada']] = [t['simbolo']]
+            matriz_relacao.loc[t['partida'], t['chegada']] = {t['simbolo']}
     
     print(matriz_relacao)
 
