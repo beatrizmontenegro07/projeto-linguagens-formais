@@ -191,47 +191,61 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
                             pares.append(tupla)
 
 
-    estados_removidos = []
+    estados_copia = estados
+    
     for p in pares:
         print(f'PAR = {p}')
+
+        if p[0] == p[1] : continue
+        
         e1 = p[0]
         e2 = p[1]
+
         if(dic_indices[p[1]] < dic_indices[p[0]]):
             e1 = p[1]
             e2 = p[0]
 
-        if (e1 in estados_removidos or e2 in estados_removidos): continue
-        for e in estados:
-            if e in estados_removidos: continue
+        for e in estados_copia:
             i = matriz_relacao.loc[e2][e]
             k = matriz_relacao.loc[e][e2]
-            print("erro")
             if not pd.isna(pd.Series(i)).any():
-                print("erro1")
+
                 if pd.isna(pd.Series(matriz_relacao.loc[e1,e])).any():
-                    print("erro2")
                     matriz_relacao.loc[e1,e] = i
                 else:  
                     l = [elem for elem in i if elem not in matriz_relacao.loc[e1,e]]
                     matriz_relacao.loc[e1,e] = matriz_relacao.loc[e1,e] + l
 
-            print("erro3")
             if not pd.isna(pd.Series(k)).any():
-                print("erro4")
+ 
                 if pd.isna(pd.Series(matriz_relacao.loc[e,e1])).any():
-                    print("erro5")
                     matriz_relacao.loc[e,e1] = k
                 else:
-                    print('oi')
+  
                     l = [elem for elem in k if elem not in matriz_relacao.loc[e,e1]]
                     matriz_relacao.loc[e,e1] = matriz_relacao.loc[e,e1] + l
-            print('oi2')
+
 
 
         matriz_relacao = matriz_relacao.drop([e2], axis=0)
         matriz_relacao = matriz_relacao.drop([e2], axis=1)
+
         print(matriz_relacao)
-        estados_removidos.append(e2)
+
+        print("antes")
+        print(pares)
+
+        for index in range(len(pares)):
+            par = pares[index]
+
+            novo_par = (e1 if par[0] == e2 else par[0], e1 if par[1] == e2 else par[1])
+
+            pares[index] = novo_par
+
+        print("depois")
+        print(pares)
+
+        estados_copia.remove(e2)
 
     print("MATRIZ FINAL")
     print(matriz_relacao)
