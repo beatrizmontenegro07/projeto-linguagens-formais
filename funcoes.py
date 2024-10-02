@@ -193,7 +193,12 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
                             pares.append(tupla)
 
 
-    estados_copia = estados
+    #essa lista tem os estados concatenados, começa com uma lista de listas representando os estados
+    estados_concatenados = []
+    for e in estados:
+        estados_concatenados.append([e])
+
+    print(estados_concatenados)
 
     for p in pares:
         print(f'PAR = {p}')
@@ -207,7 +212,12 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
             e1 = p[1]
             e2 = p[0]
 
-        for e in estados_copia:
+        for e in estados_concatenados:
+
+            if not e: continue #se a lista do estado for vazia, continue
+            else:
+                e = e[0] # pega o primeiro elemento da lista, que é o estado "original" da lista
+                
             i = matriz_relacao.loc[e2][e]
             k = matriz_relacao.loc[e][e2]
 
@@ -240,7 +250,11 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
 
             pares[index] = novo_par
 
-        estados_copia.remove(e2)
+
+        estados_concatenados[dic_indices[e1]].append(e2) # a lista que representa o estado e1 agora tem e2        
+        estados_concatenados[dic_indices[e2]].clear() # a lista que representa e2 agora está vazia
+
+        print(estados_concatenados)
 
     print("MATRIZ FINAL")
     print(matriz_relacao)
