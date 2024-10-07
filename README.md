@@ -23,6 +23,20 @@ q1,q2,b # Representa uma transição de q1 para q2 com o símbolo "b"
 
 O programa mostra no terminal o passo a passo executado pelo algoritmo, assim como o diagrama do AFD final.
 
+## Bibliotecas e instalações adicionais
+
+Para o diagrama ser gerado é necessário instalar as seguintes bibliotecas:  
+- pip install 'automata-lib[visual]'
+
+Caso o pacote 'pygraphviz' apresente erro, siga os passos abaixo:  
+- Instale o Graphviz (o arquivo cgraph.h do Graphviz é um pré-requisito para compilar o pacote pygraphviz)
+1. Baixe o instalador do Graphviz
+2. Escolha a versão adequada para o seu sistema (32 ou 64 bits).
+3. Durante a instalação, certifique-se de marcar a opção "Adicionar Graphviz ao PATH" para que o sistema possa encontrar os binários.
+4. Reinstalar o pygraphviz
+
+
+
 
 
 
