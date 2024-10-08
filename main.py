@@ -26,6 +26,9 @@ try:
 
     minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
     
+    # gerando o diagrama 
+    generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes)
+    
 except FileNotFoundError:
     print("Erro: O arquivo não foi encontrado")
 except PermissionError:
