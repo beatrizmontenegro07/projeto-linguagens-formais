@@ -8,11 +8,11 @@ try:
     arq = str(input("Digite a instancia do arquivo(.txt): ")) 
     arquivo = open(arq, 'r')
     alfabeto, estados, inicial, finais, transicoes = readFile(arquivo)
-    print(alfabeto)
+    """ print(alfabeto)
     print(estados)
     print(inicial)
     print(finais)
-    print(transicoes)
+    print(transicoes) """
 
     #fazendo uma matriz de transição no formato Q X ALFABETO
 
@@ -21,8 +21,8 @@ try:
     for t in transicoes:
         matriz_transicao.loc[t['partida'], t['simbolo']] = t['chegada']
 
-    print("Matrix de transição")
-    print(matriz_transicao)
+    """ print("Matrix de transição")
+    print(matriz_transicao) """
 
     novo_estado, novo_inicial, novo_final, novo_transicoes = minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
     

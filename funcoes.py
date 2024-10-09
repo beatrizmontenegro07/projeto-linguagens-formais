@@ -69,8 +69,6 @@ def readFile(arq):
 def isValid(alfabeto, estados, transicoes):
     #a ideia é criar uma matriz de estados por alfabeto, que armazena quantas transições daquele simbolo do alfabeto tem nquele estado
     contagem_em_zero = [[0 for _ in range(len(alfabeto))] for _ in range(len(estados))]
-
-    #print(contagem_em_zero)
     
     matriz = pd.DataFrame(contagem_em_zero, estados, alfabeto)
 
@@ -101,10 +99,10 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
         dic_indices[e] = index
         index += 1
 
-    print(dic_indices)
     
 
     #criando um dicionario em que cada chave é um estado, e cada eh elemento é uma lista que representa a linha de cada matriz triangular
+    print("O passo 1 do algoritmo consiste em criar a relação em pares dos estados do AFD\n")
     table = {}
 
     for linha in estados:
@@ -115,11 +113,13 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
         
         if lista:
             table[linha] = lista
-    
-    print("step 1")
 
-    for linha in table.values():
-        print(linha)
+
+    print("Após a execução do passo 1:\n\n")
+    mostra_tabela(table, estados)
+    
+    
+    print("O segundo passo consiste em marcar os pares (Qa, Qb), tal que Qa é um estado final e Qb não é um estado final\n")
     
     #lista de nao finais
     nao_finais = []
@@ -142,14 +142,13 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
                 table[f][dic_indices[nf]] = 1
             else:
                 table[nf][dic_indices[f]] = 1
-    
-    print("step 2")
-    print(table)
-    for linha in table.values():
-        print(linha)
 
-    print("step 3")
 
+    print("Após a execução do passo 2: \n\n")
+    mostra_tabela(table, estados)
+
+
+    print("O terceiro passo consiste em verificar cada par (Qa, Qb) que não esteja marcado. Caso o par formado pelos estados de chegada da transições (Qa, x) e (Qb, x), em que x é um símbolo do alfabeto, estiver marcado, então (Qa, Qb) será marcado\n")
 
     #realiza o processo ate nao tiver como fazer mais marcações
     process = True
@@ -174,11 +173,13 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
                                 process = True
                                 break
 
-    for linha in table.values():
-        print(linha)   
+    print("Após a execução do passo 3: \n\n")
+    mostra_tabela(table, estados)
 
 
-    print("step 4")
+
+    print("O quarto passo passo consiste em combinar os pares que não estão marcados em um único estado\n")
+
 
     matriz_relacao = cria_matriz_relacao(transicoes, estados)
     print(matriz_relacao)
@@ -203,7 +204,7 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
     print(estados_concatenados)
 
     for p in pares:
-        print(f'PAR = {p}')
+        print(f'\nCOMBINANDO O PAR = {p}\n')
 
         if p[0] == p[1] : continue
         
@@ -256,9 +257,10 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
         estados_concatenados[dic_indices[e1]].append(e2) # a lista que representa o estado e1 agora tem e2        
         estados_concatenados[dic_indices[e2]].clear() # a lista que representa e2 agora está vazia
 
+        print("\nEstados após a combinação dos estados: ")
         print(estados_concatenados)
 
-    print("MATRIZ FINAL")
+    print("\nMATRIZ RELAÇÃO FINAL\n")
     print(matriz_relacao)
 
     # a partir dos resultados da matriz relacao, cria variaveis que representam os estados e transicoes do novo AFD
@@ -269,11 +271,11 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
             
     novo_transicoes = transicoes_minimizadas(novo_estado_indices, matriz_relacao)
     
-    print(novo_estado_indices)
+    """ print(novo_estado_indices)
     print(novo_estado)
     print(novo_inicial)
     print(novo_final)
-    print(novo_transicoes)
+    print(novo_transicoes) """
 
     return novo_estado, novo_inicial, novo_final, novo_transicoes
 
@@ -287,15 +289,10 @@ def cria_matriz_relacao(transicoes, estados):
             matriz_relacao.loc[t['partida'], t['chegada']].add(t['simbolo'])
         else:
             matriz_relacao.loc[t['partida'], t['chegada']] = {t['simbolo']}
-    
-    print(matriz_relacao)
 
     return matriz_relacao
 
 def generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes):
-    #adicionando estado armadilha
-    #if 'TRAP' not in estados:
-    #    estados.append('TRAP')
     
     # define as transições no formato da biblioteca automata-lib
     transicoes_dfa = {}
@@ -380,3 +377,19 @@ def cria_dicionario_novos_estados(dic_indices, estados_concatenados, novo_estado
             cont = cont+1
     
     return novo_estado_indices
+
+def mostra_tabela(tabela, estados):
+    coluna = [f"  {e}  " for e in estados[:-1]]
+    titulo = " " * 6 + "|" + "|".join(coluna) + "|"
+    print(titulo)
+    
+
+    for estado, values in tabela.items():
+        componentes = [f"  {estado}  "]
+        for v in values:
+            if (v == 0): componentes.append("     ")
+            else: componentes.append("  X  ")
+        linha = "|" + "|".join(componentes) + "|"
+        print("-" * len(linha))
+        print(linha)
+    print("-" * len(linha) + "\n\n")
