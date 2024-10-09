@@ -261,57 +261,18 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
     print("MATRIZ FINAL")
     print(matriz_relacao)
 
+    # a partir dos resultados da matriz relacao, cria variaveis que representam os estados e transicoes do novo AFD
+
     novo_estado, novo_inicial, novo_final = estados_minimizados(estados_concatenados, inicial, finais)
 
+    novo_estado_indices = cria_dicionario_novos_estados(dic_indices, estados_concatenados, novo_estado)
+            
+    novo_transicoes = transicoes_minimizadas(novo_estado_indices, matriz_relacao)
+    
+    print(novo_estado_indices)
     print(novo_estado)
     print(novo_inicial)
     print(novo_final)
-
-    #criar funcao que faz uma nova variavel 'transicoes', similar a primeira, mas agora com base na matriz relacao
-
-    #retornar novo_estado, _novo_inicial, novo_final, novo_transicoes para a chamada da funcao no main.py, para ser usado como parametro da funcao de criar o diagrama
-
-    #return
-
-    novo_transicoes = []
-
-    for t in transicoes:
-        partida = t['partida']
-        chegada = t['chegada']
-        simbolo = t['simbolo']
-
-        for estados_concatenados in estados_concatenados:
-            if partida in estados_concatenados:
-                partida_min = ''.join(estados_concatenados)
-            if chegada in estados_concatenados:
-                chegada_min = ''.join(estados_concatenados)
-
-        #adicionando transição no novo afd minimizado
-        nova_transicao = {'partida': partida_min, 'chegada': chegada_min, 'simbolo': simbolo}
-        if nova_transicao not in novo_transicoes:
-            novo_transicoes.append(nova_transicao)
-
-    #garantindo que todos os estados minimizados têm transições definidas para todos os símbolos do alfabeto
-    #adicionando um estado armadilha caso nenhuma transição esteja definida
-
-    trap_state = 'TRAP'
-    for estado in novo_estado:
-        for simbolo in alfabeto:
-            found_transition = False
-            for t in novo_transicoes:
-                if t['partida'] == estado and t['simbolo'] == simbolo:
-                    found_transition = True
-                    break
-            if not found_transition:
-                nova_transicao = {'partida': estado, 'chegada': trap_state, 'simbolo': simbolo}
-                novo_transicoes.append(nova_transicao)
-
-    for simbolo in alfabeto:
-        nova_transicao = {'partida': trap_state, 'chegada': trap_state, 'simbolo': simbolo}
-        if nova_transicao not in novo_transicoes:
-            novo_transicoes.append(nova_transicao)
-
-    print("Novas transições:")
     print(novo_transicoes)
 
     return novo_estado, novo_inicial, novo_final, novo_transicoes
@@ -333,8 +294,8 @@ def cria_matriz_relacao(transicoes, estados):
 
 def generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes):
     #adicionando estado armadilha
-    if 'TRAP' not in estados:
-        estados.append('TRAP')
+    #if 'TRAP' not in estados:
+    #    estados.append('TRAP')
     
     # define as transições no formato da biblioteca automata-lib
     transicoes_dfa = {}
@@ -391,3 +352,31 @@ def estados_minimizados(estados_concatenados, inicial, finais):
             finais_minimizados.append(s)
     
     return estados_minimizados, inicial_minimizado, finais_minimizados
+
+def transicoes_minimizadas(novo_estado_indices, matriz_relacao):
+
+    novo_transicoes = []
+
+    for key1, value1 in novo_estado_indices.items():
+        for key2, value2 in novo_estado_indices.items():
+            if isinstance(matriz_relacao.loc[value1,value2], set):
+                for sim in matriz_relacao.loc[value1,value2]:
+                    nova_transicao = {'partida': key1, 'chegada': key2, 'simbolo': sim}
+                    novo_transicoes.append(nova_transicao)
+    
+    return novo_transicoes
+
+def cria_dicionario_novos_estados(dic_indices, estados_concatenados, novo_estado):
+    # relaciona os estados novos e seu nome com os estados velhos, que sao os indices da matriz relacao
+    novo_estado_indices = {}
+    
+    cont = 0
+
+    for chave, valor in dic_indices.items():
+        if not estados_concatenados[valor]:
+            continue
+        else:
+            novo_estado_indices[novo_estado[cont]] = chave
+            cont = cont+1
+    
+    return novo_estado_indices
