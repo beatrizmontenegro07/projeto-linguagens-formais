@@ -24,10 +24,10 @@ try:
     print("Matrix de transição")
     print(matriz_transicao)
 
-    minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
+    novo_estado, novo_inicial, novo_final, novo_transicoes = minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
     
     # gerando o diagrama 
-    generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes)
+    generate_dfa_diagram(novo_estado, alfabeto, novo_inicial, novo_final, novo_transicoes)
     
 except FileNotFoundError:
     print("Erro: O arquivo não foi encontrado")
