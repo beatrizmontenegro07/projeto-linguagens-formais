@@ -260,7 +260,17 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
 
     print("MATRIZ FINAL")
     print(matriz_relacao)
-        
+
+    novo_estado, novo_inicial, novo_final = estados_minimizados(estados_concatenados, inicial, finais)
+
+    print(novo_estado)
+    print(novo_inicial)
+    print(novo_final)
+
+    #criar funcao que faz uma nova variavel 'transicoes', similar a primeira, mas agora com base na matriz relacao
+
+    #retornar novo_estado, _novo_inicial, novo_final, novo_transicoes para a chamada da funcao no main.py, para ser usado como parametro da funcao de criar o diagrama
+
     return
 
 def cria_matriz_relacao(transicoes, estados):
@@ -306,3 +316,30 @@ def generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes):
     except InvalidStateError as e:
         print(f"Erro ao criar o AFD: {e}")
     
+def estados_minimizados(estados_concatenados, inicial, finais):
+    estados_minimizados = []
+    inicial_minimizado = []
+    finais_minimizados = []
+
+    for estados in estados_concatenados:
+        s = ""
+        if not estados:
+            continue
+        
+        ini = False
+        fin = False
+        for e in estados:
+            if e == inicial[0]: 
+                ini = True
+            for f in finais:
+                if(f == e):
+                    fin = True
+            s += e
+        
+        estados_minimizados.append(s)
+        if ini:
+            inicial_minimizado.append(s)
+        if fin:
+            finais_minimizados.append(s)
+    
+    return estados_minimizados, inicial_minimizado, finais_minimizados
