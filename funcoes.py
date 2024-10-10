@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from automata.fa.dfa import DFA
 from automata.base.exceptions import InvalidStateError
+import os
 
 def readFile(arq):
     alfabeto = []
@@ -204,9 +205,10 @@ def minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, tran
     print(estados_concatenados)
 
     for p in pares:
-        print(f'\nCOMBINANDO O PAR = {p}\n')
 
         if p[0] == p[1] : continue
+
+        print(f'\nCOMBINANDO O PAR = {p}\n')
         
         e1 = p[0]
         e2 = p[1]
@@ -292,7 +294,7 @@ def cria_matriz_relacao(transicoes, estados):
 
     return matriz_relacao
 
-def generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes):
+def generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes, nome_do_arquivo):
     
     # define as transições no formato da biblioteca automata-lib
     transicoes_dfa = {}
@@ -316,8 +318,9 @@ def generate_dfa_diagram(estados, alfabeto, inicial, finais, transicoes):
         )
 
         #desenha o diagrama do AFD 
-        dfa.show_diagram(path='afd_minimizado.png')
-        print("Diagrama do AFD minimizado salvo como 'afd_minimizado.png'")
+        caminho = os.path.join('diagramas', f'diagrama_{nome_do_arquivo}_minimizado.png')
+        dfa.show_diagram(path=caminho)
+        print(f"Diagrama do AFD minimizado salvo na pasta 'diagramas' como 'diagrama_{nome_do_arquivo}_minimizado.png'")
     
     except InvalidStateError as e:
         print(f"Erro ao criar o AFD: {e}")

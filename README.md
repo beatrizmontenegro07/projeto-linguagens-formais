@@ -18,6 +18,10 @@ q0,q1,a # Representa uma transição de q0 para q1 com o símbolo "a"
 q1,q2,b # Representa uma transição de q1 para q2 com o símbolo "b"
 ... 
 `````
+Para execução do programa, é necessário passar o comando no seguinte formato
+```bash
+python3 main.py caminho/para/arquivo.txt
+`````
 
 ## Saída
 
