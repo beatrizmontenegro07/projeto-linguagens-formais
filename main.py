@@ -1,4 +1,5 @@
 from funcoes import *
+from minimizador import *
 import numpy as np
 import pandas as pd
 import sys
@@ -15,7 +16,7 @@ try:
 
     # arq = str(input("Digite a instancia do arquivo(.txt): ")) 
     arquivo = open(arq, 'r')
-    alfabeto, estados, inicial, finais, transicoes = readFile(arquivo)
+    alfabeto, estados, inicial, finais, transicoes = leArquivo(arquivo)
     """ print(alfabeto)
     print(estados)
     print(inicial)
@@ -32,14 +33,14 @@ try:
     """ print("Matrix de transição")
     print(matriz_transicao) """
 
-    novo_estado, novo_inicial, novo_final, novo_transicoes = minimizationOfDFA(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
+    novo_estado, novo_inicial, novo_final, novo_transicoes = minimizaAFD(matriz_transicao, alfabeto, estados, inicial, finais, transicoes)
     
     # pegando só o nome do arquivo, e depois tirando a extensao '.txt' do nome
     nome_do_arquivo = os.path.basename(arq)
     nome_do_arquivo = os.path.splitext(nome_do_arquivo)[0]
     
     # gerando o diagrama 
-    generate_dfa_diagram(novo_estado, alfabeto, novo_inicial, novo_final, novo_transicoes, nome_do_arquivo)
+    geraDiagrama(novo_estado, alfabeto, novo_inicial, novo_final, novo_transicoes, nome_do_arquivo)
     
 except FileNotFoundError:
     print("Erro: O arquivo não foi encontrado")
